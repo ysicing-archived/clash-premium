@@ -5,10 +5,10 @@ mode: rule
 log-level: info
 external-controller: 0.0.0.0:22222
 external-ui: "/etc/clash/yacd"
-secret: "Daes2ohghuyiay0AhThiewoesiereel9"
-authentication:
- - "blog.ysicing.net:blog.ysicing.net"
- - "ysicing.me:ysicing.me"
+# secret: "Daes2ohghuyiay0AhThiewoesiereel9"
+# authentication:
+#  - "blog.ysicing.net:blog.ysicing.net"
+#  - "ysicing.me:ysicing.me"
 
 profile:
   store-selected: true
