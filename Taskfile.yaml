@@ -1,0 +1,107 @@
+version: '3'
+
+vars:
+  VERSION:
+    sh: git describe --tags --always
+  COMMIT_SHA:
+    sh: git rev-parse HEAD
+  BUILD_DATE:
+    sh: date '+%F %T'
+  PREMIUM_VERSION:
+    sh: curl -sSL https://api.github.com/repos/Dreamacro/clash/releases/tags/premium | jq -r '.name'
+
+tasks:
+  clean:
+    desc: Clean Up Cache Files
+    cmds:
+      - rm -rf build
+  mkdir:
+    desc: Create Cache Dir
+    cmds:
+      - mkdir -p build/etc/clash/ruleset build/usr/bin
+    status:
+      - test -d build
+  download-mmdb:
+    desc: Download GeoIP2-CN MMDB
+    cmds:
+      - curl -sSL https://cdn.jsdelivr.net/gh/Hackl0us/GeoIP2-CN@release/Country.mmdb > build/etc/clash/Country.mmdb
+    status:
+      - test -f build/etc/clash/Country.mmdb
+  download-ruleset:
+    desc: Download Loyalsoldier RuleSet
+    cmds:
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt > build/etc/clash/ruleset/reject.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt > build/etc/clash/ruleset/icloud.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt > build/etc/clash/ruleset/apple.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/google.txt > build/etc/clash/ruleset/google.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt > build/etc/clash/ruleset/proxy.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt > build/etc/clash/ruleset/direct.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt > build/etc/clash/ruleset/private.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt > build/etc/clash/ruleset/gfw.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/greatfire.txt > build/etc/clash/ruleset/greatfire.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt > build/etc/clash/ruleset/tld-not-cn.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt > build/etc/clash/ruleset/telegramcidr.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt > build/etc/clash/ruleset/cncidr.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt > build/etc/clash/ruleset/lancidr.yaml
+      - curl -sSL https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt > build/etc/clash/ruleset/applications.yaml
+    status:
+      - test -f build/etc/clash/ruleset/reject.yaml
+      - test -f build/etc/clash/ruleset/icloud.yaml
+      - test -f build/etc/clash/ruleset/apple.yaml
+      - test -f build/etc/clash/ruleset/google.yaml
+      - test -f build/etc/clash/ruleset/proxy.yaml
+      - test -f build/etc/clash/ruleset/direct.yaml
+      - test -f build/etc/clash/ruleset/private.yaml
+      - test -f build/etc/clash/ruleset/gfw.yaml
+      - test -f build/etc/clash/ruleset/greatfire.yaml
+      - test -f build/etc/clash/ruleset/tld-not-cn.yaml
+      - test -f build/etc/clash/ruleset/telegramcidr.yaml
+      - test -f build/etc/clash/ruleset/cncidr.yaml
+      - test -f build/etc/clash/ruleset/lancidr.yaml
+      - test -f build/etc/clash/ruleset/applications.yaml
+  build-premium-dashboard:
+    desc: Build Clash Premium Dashboard
+    cmds:
+      - git clone https://github.com/haishanh/yacd.git build/yacd
+      - defer: rm -rf build/yacd
+      - (cd build/yacd && pnpm install > /dev/null 2>&1 && pnpm build > /dev/null 2>&1)
+      - cp -r build/yacd/public build/etc/clash/yacd
+    status:
+      - test -d build/etc/clash/yacd
+
+  download-clash-premium:
+    desc: Download Clash Premium
+    vars:
+      CLASH_URL:
+        sh: curl -sSL https://api.github.com/repos/Dreamacro/clash/releases/tags/premium | jq -r '.assets[].browser_download_url | select (. | test("clash-linux-amd64-\\d{4}.*gz"))'
+    cmds:
+      - curl -sSL {{.CLASH_URL}} > build/usr/bin/clash-linux-amd64.gz
+      - gzip -d build/usr/bin/clash-linux-amd64.gz
+      - chmod +x build/usr/bin/clash-linux-amd64
+    status:
+      - test -f build/usr/bin/clash-linux-amd64
+
+  move-clash-premium:
+    desc: Copy Clash Premium
+    cmds:
+      - task: download-clash-premium
+      - mv build/usr/bin/clash-linux-amd64 build/usr/bin/clash
+
+  build-clash-premium-image:
+    desc: Build With Clash Premium
+    label: build-premium-linux-amd64
+    cmds:
+      - task: mkdir
+      - task: download-mmdb
+      - task: download-ruleset
+      - task: build-premium-dashboard
+      - task: download-clash-premium
+      - task: move-clash-premium
+      - |
+        docker build --pull --push -t ttl.sh/ysicing-clash-premium:2h .
+
+  default:
+    cmds:
+      - task: clean
+      - task: build-clash-premium-image
+      - rm -rf build
