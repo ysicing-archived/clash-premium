@@ -3,7 +3,9 @@ name: cron
 on:
   schedule:
     - cron: '*/90 * * * *'
-
+  push:
+    branches:
+    - master
 jobs:
   task:
     runs-on: ubuntu-latest
