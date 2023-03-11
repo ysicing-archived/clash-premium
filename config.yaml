@@ -53,17 +53,65 @@ proxy-providers:
       interval: 300
       url: http://www.gstatic.com/generate_204
 
+  itxve-fetch-clash-node:
+    type: http
+    url: "https://cdn.jsdelivr.net/gh/itxve/fetch-clash-node/node/NodeFree.yaml"
+    path: ./sub/itxve-fetch-clash-node.yaml
+    interval: 1800
+    health-check:
+      enable: true
+      interval: 300
+      url: http://www.gstatic.com/generate_204
+
+  Pawdroid-Free-servers:
+    type: http
+    url: "https://sub.xeton.dev/sub?target=clash&new_name=true&url=https%3A%2F%2Fraw.fastgit.org%2FPawdroid%2FFree-servers%2Fmain%2Fsub&insert=false"
+    path: ./sub/Pawdroid-Free-servers.yaml
+    interval: 1800
+    health-check:
+      enable: true
+      interval: 300
+      url: http://www.gstatic.com/generate_204
+
+  tbbatbb-Proxy:
+    type: http
+    url: "https://raw.githubusercontent.com/tbbatbb/Proxy/master/dist/clash.config.yaml"
+    path: ./sub/tbbatbb-Proxy.yaml
+    interval: 1800
+    health-check:
+      enable: true
+      interval: 300
+      url: http://www.gstatic.com/generate_204
+
+  xrayfree-free-ssr-ss-v2ray-vpn-clash:
+    type: http
+    url: "https://sub.xeton.dev/sub?target=clash&new_name=true&url=https%3A%2F%2Ffreefq.neocities.org%2Ffree.txt&insert=false&config=https%3A%2F%2Fraw.githubusercontent.com%2FACL4SSR%2FACL4SSR%2Fmaster%2FClash%2Fconfig%2FACL4SSR_Online_Mini.ini"
+    path: ./sub/xrayfree-free-ssr-ss-v2ray-vpn-clash.yaml
+    interval: 1800
+    health-check:
+      enable: true
+      interval: 300
+      url: http://www.gstatic.com/generate_204
 
 proxy-groups:
   - name: "auto"
     type: url-test
     use:
       - free_proxy_ss
+      - itxve-fetch-clash-node
+      - Pawdroid-Free-servers
+      - tbbatbb-Proxy
+      - xrayfree-free-ssr-ss-v2ray-vpn-clash
 
   - name: "select"
     type: select
     use:
       - free_proxy_ss
+      - itxve-fetch-clash-node
+      - Pawdroid-Free-servers
+      - tbbatbb-Proxy
+      - xrayfree-free-ssr-ss-v2ray-vpn-clash
+      - auto
 
 rule-providers:
   reject:
