@@ -98,7 +98,7 @@ tasks:
       - task: download-clash-premium
       - task: move-clash-premium
       - |
-        docker build --pull --push -t ttl.sh/clash-premium:2h .
+        docker buildx build --pull --push -t ttl.sh/clash-premium:2h .
 
   default:
     cmds:
