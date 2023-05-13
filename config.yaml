@@ -22,12 +22,38 @@ dns:
   default-nameserver:
     - 121.4.4.123
     - 120.53.53.38
+    - 119.29.29.29
+    - 180.76.76.76
   nameserver:
     - https://doh.pub/dns-query
     - https://120.53.53.53/dns-query
     - https://1.12.12.12/dns-query
     - tls://dot.pub
+    - tls://dns.alidns.com
     - https://dns.alidns.com/dns-query
+    - https://dns.adguard.com/dns-query
+    - tls://dns.adguard.com
+    - https://doh.dns.sb/dns-query
+    - tls://dot.sb
+    - https://dns.twnic.tw/dns-query
+  fake-ip-filter:
+    - '*.lan'
+    - 'time.*.com'
+    - 'time.*.gov'
+    - 'time.*.edu.cn'
+    - 'time.*.apple.com'
+    - 'ntp.*.com'
+    - 'localhost.ptlogin2.qq.com'
+    - '*.ntp.org.cn'
+    - '+.pool.ntp.org'
+    - '*.localhost'
+  fallback:
+    - https://doh.dns.sb/dns-query
+    - https://dns.cloudflare.com/dns-query
+    - https://dns.twnic.tw/dns-query
+    - https://1.1.1.1/dns-query
+    - tls://8.8.4.4:853
+    - https://dns.google/dns-query
   fallback-filter:
     geoip: true
     geoip-code: CN
@@ -35,82 +61,144 @@ dns:
       - 240.0.0.0/4
       - 0.0.0.0/32
       - 127.0.0.1/32
+      - 169.254.0.0/16
     domain:
       - '+.google.com'
       - '+.youtube.com'
 
 tun:
   enable: false
+  stack: system
+  dns-hijack:
+    - any:53
+  auto-route: true
+  auto-detect-interface: true
+
+ppargs: &ppargs
+  type: http
+  # 更新周期
+  interval: 3600
+  # 节点检查
+  health-check:
+    enable: true
+    interval: 300
+    url: http://www.gstatic.com/generate_204
 
 proxy-providers:
   free_proxy_ss:
-    type: http
     url: "https://cdn.jsdelivr.net/gh/learnhard-cn/free_proxy_ss@main/clash/clash.provider.yaml"
     path: ./sub/free_proxy_ss.yaml
-    interval: 1800
-    health-check:
-      enable: true
-      interval: 300
-      url: http://www.gstatic.com/generate_204
+    <<: *ppargs
 
-  itxve-fetch-clash-node:
-    type: http
+  itxve-fetch-clash-node-free:
     url: "https://cdn.jsdelivr.net/gh/itxve/fetch-clash-node/node/NodeFree.yaml"
-    path: ./sub/itxve-fetch-clash-node.yaml
-    interval: 1800
-    health-check:
-      enable: true
-      interval: 300
-      url: http://www.gstatic.com/generate_204
+    path: ./sub/itxve-fetch-clash-node-free.yaml
+    <<: *ppargs
+
+  itxve-fetch-clash-node-clash:
+    url: "https://cdn.jsdelivr.net/gh/itxve/fetch-clash-node/node/ClashNode.yaml"
+    path: ./sub/itxve-fetch-clash-node-clash.yaml
+    <<: *ppargs
 
   Pawdroid-Free-servers:
-    type: http
     url: "https://sub.xeton.dev/sub?target=clash&new_name=true&url=https%3A%2F%2Fraw.fastgit.org%2FPawdroid%2FFree-servers%2Fmain%2Fsub&insert=false"
     path: ./sub/Pawdroid-Free-servers.yaml
-    interval: 1800
-    health-check:
-      enable: true
-      interval: 300
-      url: http://www.gstatic.com/generate_204
+    <<: *ppargs
 
   tbbatbb-Proxy:
-    type: http
     url: "https://raw.githubusercontent.com/tbbatbb/Proxy/master/dist/clash.config.yaml"
     path: ./sub/tbbatbb-Proxy.yaml
-    interval: 1800
-    health-check:
-      enable: true
-      interval: 300
-      url: http://www.gstatic.com/generate_204
+    <<: *ppargs
 
   xrayfree-free-ssr-ss-v2ray-vpn-clash:
-    type: http
+    <<: *ppargs
     url: "https://sub.xeton.dev/sub?target=clash&new_name=true&url=https%3A%2F%2Ffreefq.neocities.org%2Ffree.txt&insert=false&config=https%3A%2F%2Fraw.githubusercontent.com%2FACL4SSR%2FACL4SSR%2Fmaster%2FClash%2Fconfig%2FACL4SSR_Online_Mini.ini"
     path: ./sub/xrayfree-free-ssr-ss-v2ray-vpn-clash.yaml
-    interval: 1800
-    health-check:
-      enable: true
-      interval: 300
-      url: http://www.gstatic.com/generate_204
+
+  clash-freenode-Proxy:
+    url: "https://raw.githubusercontent.com/openrunner/clash-freenode/main/clash.yaml"
+    path: ./sub/clash-freenode-Proxy.yaml
+    <<: *ppargs
+
+  aiboboxx-clashfree-Proxy:
+    url: "https://raw.githubusercontent.com/aiboboxx/clashfree/main/clash.yml"
+    path: ./sub/aiboboxx-clashfree-Proxy.yaml
+    <<: *ppargs
+
+  nicevpn-Proxy:
+    url: "https://sub.nicevpn.top/Clash.yaml"
+    path: ./sub/nicevpn-Proxy.yaml
+    <<: *ppargs
+
+  vveg26-Proxy:
+    url: "https://raw.githubusercontent.com/vveg26/get_proxy/main/dist/clash.config.yaml"
+    path: ./sub/vveg26-Proxy.yaml
+    <<: *ppargs
+
+  # mfuu-Proxy:
+  #   url: "https://raw.githubusercontent.com/mfuu/v2ray/master/clash.yaml"
+  #   path: ./sub/mfuu-Proxy.yaml
+  #   <<: *ppargs
+
+  anaer-Proxy:
+    url: "https://raw.githubusercontent.com/anaer/Sub/main/clash.yaml"
+    path: ./sub/anaer-Proxy.yaml
+    <<: *ppargs
+
+  pojiezhiyuanjun-Proxy:
+    url: "https://raw.githubusercontent.com/pojiezhiyuanjun/freev2/master/0513clash.yml"
+    path: ./sub/pojiezhiyuanjun-Proxy.yaml
+    <<: *ppargs
+
+  oslook-Proxy:
+    url: "https://raw.githubusercontent.com/oslook/clash-freenode/main/clash.yaml"
+    path: ./sub/oslook-Proxy.yaml
+    <<: *ppargs
+
+  ermaozi-Proxy:
+    url: "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/clash.yml"
+    path: ./sub/ermaozi-Proxy.yaml
+    <<: *ppargs
 
 proxy-groups:
   - name: "auto"
     type: url-test
     use:
       - free_proxy_ss
-      - itxve-fetch-clash-node
+      - itxve-fetch-clash-node-free
+      - itxve-fetch-clash-node-clash
       - Pawdroid-Free-servers
       - tbbatbb-Proxy
       - xrayfree-free-ssr-ss-v2ray-vpn-clash
+      - clash-freenode-Proxy
+      - aiboboxx-clashfree-Proxy
+      - nicevpn-Proxy
+      - vveg26-Proxy
+      # - mfuu-Proxy
+      - anaer-Proxy
+      - pojiezhiyuanjun-Proxy
+      - oslook-Proxy
+      - ermaozi-Proxy
 
   - name: "select"
     type: select
     use:
       - free_proxy_ss
-      - itxve-fetch-clash-node
+      - itxve-fetch-clash-node-free
+      - itxve-fetch-clash-node-clash
       - Pawdroid-Free-servers
       - tbbatbb-Proxy
       - xrayfree-free-ssr-ss-v2ray-vpn-clash
+      - clash-freenode-Proxy
+      - aiboboxx-clashfree-Proxy
+      - nicevpn-Proxy
+      - vveg26-Proxy
+      # - mfuu-Proxy
+      - anaer-Proxy
+      - pojiezhiyuanjun-Proxy
+      - oslook-Proxy
+      - ermaozi-Proxy
+    proxies:
       - auto
 
 rule-providers:
