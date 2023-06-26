@@ -71,11 +71,8 @@ tasks:
 
   download-clash-premium:
     desc: Download Clash Premium
-    vars:
-      CLASH_URL:
-        sh: curl -sSL https://api.github.com/repos/Dreamacro/clash/releases/tags/premium | jq -r '.assets[].browser_download_url | select (. | test("clash-linux-amd64-\\d{4}.*gz"))'
     cmds:
-      - curl -sSL {{.CLASH_URL}} > build/usr/bin/clash-linux-amd64.gz
+      - curl -sSL https://release.dreamacro.workers.dev/latest/clash-linux-amd64-latest.gz > build/usr/bin/clash-linux-amd64.gz
       - gzip -d build/usr/bin/clash-linux-amd64.gz
       - chmod +x build/usr/bin/clash-linux-amd64
     status:
